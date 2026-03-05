@@ -20,9 +20,7 @@ class Model(nn.Module):
             dropout=self.dropout if self.num_layers > 1 else 0.0
         )
 
-        self.fc = nn.Sequential(
-            nn.Linear(self.hidden_size, self.out_features),
-        )
+        self.fc = nn.Linear(self.hidden_size, self.out_features)
 
     def forward(self, x):
         """
@@ -31,11 +29,8 @@ class Model(nn.Module):
         to a different target (e.g., SEI Rate, Temperature)
         """
 
-        _, (h_n, _) = self.lstm(x)
+        out, (_, _) = self.lstm(x) # (batch, seq_len, hidden_size)
 
-        # Final hidden state from last layer
-        final_hidden = h_n[-1]
-
-        output = self.fc(final_hidden)
+        output = self.fc(out)       # (batch, seq_len, out_features)
 
         return output

@@ -22,36 +22,28 @@ class Model(nn.Module):
             nn.Tanh(),
         )
 
-        # Independent output heads (like your MLP networks list)
-        self.heads = nn.ModuleList([
-            nn.Sequential(
-                nn.AdaptiveAvgPool1d(1),   # Global pooling
-                nn.Flatten(),
-                nn.Linear(128, 64),
-                nn.Tanh(),
-                nn.Dropout(0.2),
-                nn.Linear(64, 1),
-            )
-            for _ in range(self.out_features)
-        ])
+        # Sequence prediction layer
+        self.output_layer = nn.Conv1d(
+            in_channels=128,
+            out_channels=self.out_features,
+            kernel_size=1
+        )
 
     def forward(self, x):
         """
         x: (batch, seq_len, in_features)
-        out: (batch, out_features) - where each column corresponds 
-        to a different target (e.g., SEI Rate, Temperature)
+
+        returns:
+        (batch, seq_len, out_features)
         """
 
-        # Convert to (batch, channels, seq_len)
+        # (B, W, F) -> (B, F, W)
         x = x.permute(0, 2, 1)
 
-        features = self.feature_extractor(x)
+        features = self.feature_extractor(x)      # (B,128,W)
 
-        outputs = []
-        for head in self.heads:
-            out = head(features)
-            outputs.append(out)
+        out = self.output_layer(features)         # (B,out_features,W)
 
-        out = torch.cat(outputs, dim=-1)
+        out = out.permute(0, 2, 1)                # (B,W,out_features)
 
         return out
