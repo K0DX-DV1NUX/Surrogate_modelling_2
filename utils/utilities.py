@@ -1,4 +1,5 @@
 import os
+import datetime
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -49,17 +50,18 @@ def plot_predictions(preds, targets, plots_dir="plots"):
         "Temperature [K]",
     ]
 
+    file_date = datetime.datetime.now().strftime("%d_%H_%M_%S")
     file_names = [
-        "sei_rate.png",
-        "temperature.png",
+        f"sei_rate_{file_date}.png",
+        f"temperature_{file_date}.png",
     ]
 
     for i in range(2):
 
         plt.figure(figsize=(8, 4))
 
-        plt.plot(targets[:, i], label="True", linewidth=1)
-        plt.plot(preds[:, i], label="Predicted", linewidth=1)
+        plt.plot(targets[:, i].flatten(), label="True", linewidth=1)
+        plt.plot(preds[:, i].flatten(), label="Predicted", linewidth=1)
 
         plt.xlabel("Timestep")
         plt.ylabel(feature_names[i])
