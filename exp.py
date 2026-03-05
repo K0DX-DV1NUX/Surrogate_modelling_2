@@ -8,19 +8,11 @@ import os
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 
 from builds.build_dataframes import BuildDataframes
-from builds.build_datasets import BatteryDataset
+from builds.build_datasets import BatterySeq2SeqDataset
 from builds.standardization import Standardizer
-from models import GRU, LSTM, MLP, CNN
+from models import GRU, LSTM, MLP, CNN, FNO
 
 class Exp:
-    """
-    This class encapsulates the entire experiment pipeline for training and 
-    evaluating a surrogate model for battery SEI formation. It handles data 
-    loading, preprocessing, model training, validation, testing, and results 
-    saving. The class is designed to be flexible and configurable through 
-    command-line arguments, allowing users to easily switch between different 
-    models, datasets, and hyperparameters.
-    """
 
     def __init__(self, configs, checkpoint_dir="checkpoints"):
 
@@ -49,20 +41,20 @@ class Exp:
             # ----------------------------
             # Build train and vali datasets
             # ----------------------------
-            train_dataset = BatteryDataset(train_std,
+            train_dataset = BatterySeq2SeqDataset(train_std,
                                         window_size=configs.window_size,
                                         stride=configs.stride)
-            vali_dataset  = BatteryDataset(vali_std,
+            vali_dataset  = BatterySeq2SeqDataset(vali_std,
                                         window_size=configs.window_size,
                                         stride=configs.stride)
             
             # ----------------------------
             # Build train and vali datasets
             # ----------------------------
-            train_dataset = BatteryDataset(train_std,
+            train_dataset = BatterySeq2SeqDataset(train_std,
                                         window_size=configs.window_size,
                                         stride=configs.stride)
-            vali_dataset  = BatteryDataset(vali_std,
+            vali_dataset  = BatterySeq2SeqDataset(vali_std,
                                         window_size=configs.window_size,
                                         stride=configs.stride)
             
@@ -99,9 +91,9 @@ class Exp:
         test_std  = [self.scaler.transform(df) for df in test_dfs]
 
        
-        test_dataset  = BatteryDataset(test_std,
+        test_dataset  = BatterySeq2SeqDataset(test_std,
                                        window_size=configs.window_size,
-                                       stride=1)
+                                       stride=configs.window_size)  # non-overlapping windows for testing
 
         
         self.test_loader = DataLoader(test_dataset,
@@ -139,6 +131,7 @@ class Exp:
             "LSTM": LSTM,
             "MLP": MLP,
             "CNN": CNN,
+            "FNO": FNO,
         }
         return models[model_name].Model(self.configs).float()
 
@@ -282,6 +275,10 @@ class Exp:
 
         preds = np.concatenate(preds)
         targets = np.concatenate(targets)
+
+        preds = preds.reshape(-1, preds.shape[-1])
+        targets = targets.reshape(-1, targets.shape[-1])
+
         self.write_results(preds, targets)
         
 
@@ -309,10 +306,7 @@ class Exp:
         # -------------------------
         
         with open("results.txt", "a") as f:
-            f.write("Battery Surrogate Model Test Metrics\n")
-            f.write("-----------------------------------\n")
             f.write(f"MODEL:{self.configs.model}, SEED:{self.configs.seed}, MSE:{mse:.6f}, MAE:  {mae:.6f}, MSE_SEI: {mse_sei:.6f}, MAE_SEI: {mae_sei:.6f}, MSE_TEMP: {mse_temp:.6f}, MAE_TEMP: {mae_temp:.6f}")
-            f.write(f"\n")
             f.write(f"\n")
             f.close()
 

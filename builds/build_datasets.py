@@ -71,3 +71,48 @@ class BatteryDataset(Dataset):
             torch.tensor(input_seq, dtype=torch.float32),
             torch.tensor(target, dtype=torch.float32)
         )
+
+
+class BatterySeq2SeqDataset(Dataset):
+
+    def __init__(self, dataframes, window_size=30, stride=1):
+
+        self.window_size = window_size
+        self.stride = stride
+
+        self.X_data = []
+        self.Y_data = []
+        self.samples = []
+
+        for df_id, df in enumerate(dataframes):
+
+            X = torch.tensor(
+                df[["Current [A]", "Terminal voltage [V]", "Q_cum"]].values,
+                dtype=torch.float32
+            )
+
+            Y = torch.tensor(
+                df[["SEI Rate", "Cell temperature [K]"]].values,
+                dtype=torch.float32
+            )
+
+            self.X_data.append(X)
+            self.Y_data.append(Y)
+
+            seq_len = X.shape[0]
+
+            for start in range(0, seq_len - window_size + 1, stride):
+                end = start + window_size
+                self.samples.append((df_id, start, end))
+
+    def __len__(self):
+        return len(self.samples)
+
+    def __getitem__(self, idx):
+
+        df_id, start, end = self.samples[idx]
+
+        X = self.X_data[df_id][start:end]
+        Y = self.Y_data[df_id][start:end]
+
+        return X, Y
