@@ -23,8 +23,8 @@ run_experiment() {
         --learning_rate 1e-3 \
         --loss mse \
         --num_workers 0 \
-        --window_size 50 \
-        --stride 5 \
+        --window_size 100 \
+        --stride 10 \
         --seed $seed \
         --test_model_folder "checkpoints/${model}_${seed}"
 }
