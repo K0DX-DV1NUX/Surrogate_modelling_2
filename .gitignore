@@ -208,3 +208,10 @@ __marimo__/
 
 Experiments/
 
+checkpoints/
+
+plots/
+
+results/
+
+.vscode/
