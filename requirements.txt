@@ -7,3 +7,4 @@ einops==0.7.0
 scipy==1.12.0
 plotly
 seaborn
+pybamm
