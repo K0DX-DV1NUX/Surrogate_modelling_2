@@ -1,5 +1,8 @@
 import pandas as pd
 import numpy as np
+import matplotlib
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pybamm
 import importlib
@@ -39,6 +42,40 @@ def load_parameter_values(config_path="parameters.toml"):
         parameters[name] = value
 
     return pybamm.ParameterValues(parameters)
+
+
+def cycle_variable_max(cycle, variable_name):
+    try:
+        return cycle[variable_name].entries.max()
+    except KeyError:
+        return np.nan
+
+
+def plotter(solution, output_specs, plots_dir="plots"):
+    plots_path = Path(plots_dir)
+    plots_path.mkdir(parents=True, exist_ok=True)
+    cycle_numbers = np.arange(len(solution.cycles))
+    saved_paths = []
+
+    for label, variable_name, filename in output_specs:
+        values = []
+        for cycle in solution.cycles:
+            values.append(cycle_variable_max(cycle, variable_name))
+
+        plt.figure(figsize=(8, 5))
+        plt.plot(cycle_numbers[2:], values[2:], marker="o", linewidth=1.5, markersize=3)
+        plt.xlabel("Cycle")
+        plt.ylabel(label)
+        plt.title(label)
+        plt.grid(True, alpha=0.3)
+        plt.tight_layout()
+
+        save_path = plots_path / filename
+        plt.savefig(save_path, dpi=300)
+        plt.close()
+        saved_paths.append(save_path)
+
+    return saved_paths
 
 
 def main():
@@ -123,7 +160,7 @@ def main():
         "Charge at 1C until 4.1V",
         "Discharge at 1.1C until 2.7V",
     )
-    num_cycles = 1000
+    num_cycles = 100
     aging = pybamm.Experiment([aging_cycle] * num_cycles, termination="80% capacity")
     print(f"------Running aging------")
     start_time = time.time()
@@ -132,27 +169,50 @@ def main():
     print(f"Aging experiment elapsed in {end_time - start_time:.2f} seconds\n")
 
 
-    ## Print the Outputs of interest.
-    output_rows = [
+    outputs_of_interest = [
         (
             "Capacity [A.h]",
-            sol3.cycles[2]["Discharge capacity [A.h]"].entries.max(),
-            sol3.cycles[-1]["Discharge capacity [A.h]"].entries.max(),
+            "Discharge capacity [A.h]",
+            "capacity.png",
         ),
         (
             "Loss to Negative Li Plating [A.h]",
-            sol3.cycles[2]["Loss of capacity to negative lithium plating [A.h]"].entries.max(),
-            sol3.cycles[-1]["Loss of capacity to negative lithium plating [A.h]"].entries.max(),
+            "Loss of capacity to negative lithium plating [A.h]",
+            "loss_to_negative_li_plating.png",
         ),
         (
             "Loss to SEI [A.h]",
-            sol3.cycles[2]["Loss of capacity to negative SEI [A.h]"].entries.max(),
-            sol3.cycles[-1]["Loss of capacity to negative SEI [A.h]"].entries.max(),
+            "Loss of capacity to negative SEI [A.h]",
+            "loss_to_sei.png",
         ),
         (
             "Local ECM Resistance [Ohm]",
-            sol3.cycles[2]["Local ECM resistance [Ohm]"].entries.max(),
-            sol3.cycles[-1]["Local ECM resistance [Ohm]"].entries.max(),
+            "Local ECM resistance [Ohm]",
+            "local_ecm_resistance.png",
+        ),
+    ]
+
+    ## Print the Outputs of interest.
+    output_rows = [
+        (
+            outputs_of_interest[0][0],
+            cycle_variable_max(sol3.cycles[0], outputs_of_interest[0][1]),
+            cycle_variable_max(sol3.cycles[-1], outputs_of_interest[0][1]),
+        ),
+        (
+            outputs_of_interest[1][0],
+            cycle_variable_max(sol3.cycles[0], outputs_of_interest[1][1]),
+            cycle_variable_max(sol3.cycles[-1], outputs_of_interest[1][1]),
+        ),
+        (
+            outputs_of_interest[2][0],
+            cycle_variable_max(sol3.cycles[0], outputs_of_interest[2][1]),
+            cycle_variable_max(sol3.cycles[-1], outputs_of_interest[2][1]),
+        ),
+        (
+            outputs_of_interest[3][0],
+            cycle_variable_max(sol3.cycles[0], outputs_of_interest[3][1]),
+            cycle_variable_max(sol3.cycles[-1], outputs_of_interest[3][1]),
         ),
     ]
 
@@ -166,6 +226,11 @@ def main():
         for metric, start, final in output_rows
     )
     print("\n".join(table_lines))
+
+    saved_plots = plotter(sol3, outputs_of_interest)
+    print("\nSaved plots:")
+    for path in saved_plots:
+        print(path)
 
 
 if __name__ == "__main__":
