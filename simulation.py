@@ -82,12 +82,13 @@ def main():
         "Charge at 0.333C for 15 minutes",
         "Rest for 4320 minutes"
     )
+    print("\n")
     print(f"------Running pre-step------")
     start_time = time.time()
     pre_step = pybamm.Experiment([pre_step_cycle])
     sol1 = run_model(pre_step, parameter_values, None)
     end_time = time.time()
-    print(f"Pre-step completed in {end_time - start_time:.2f} seconds\n")
+    print(f"Pre-step experiment elapsed in {end_time - start_time:.2f} seconds\n")
 
     ## Activate the below to see all keys available in a cycle. 
     ## This is useful to identify the keys for the desired outputs.
@@ -110,7 +111,9 @@ def main():
     start_time = time.time()
     sol2 = run_model(formation, parameter_values, sol1.last_state)
     end_time = time.time()
-    print(f"Formation completed in {end_time - start_time:.2f} seconds\n")
+    print(f"Formation experiment elapsed in {end_time - start_time:.2f} seconds\n")
+    formation_time_s = sol2.t[-1] - sol2.t[0]
+    print(f"Total Formation time: {formation_time_s / 3600:.2f} hours\n")
 
     
     # -----------------------------
@@ -126,7 +129,7 @@ def main():
     start_time = time.time()
     sol3 = run_model(aging, parameter_values, sol2.last_state)
     end_time = time.time()
-    print(f"Aging completed in {end_time - start_time:.2f} seconds\n")
+    print(f"Aging experiment elapsed in {end_time - start_time:.2f} seconds\n")
 
 
     ## Print the Outputs of interest.
