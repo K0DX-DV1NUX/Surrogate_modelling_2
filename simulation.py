@@ -2,30 +2,51 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import pybamm
+import importlib
+import tomllib
+from pathlib import Path
+import time
+
+
+def load_parameter_values(config_path="parameters.toml"):
+    parameter_file = Path(config_path)
+    try:
+        with parameter_file.open("rb") as file:
+            config = tomllib.load(file)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Could not read parameter file: {parameter_file}")
+
+    parameters = {}
+    for entry in config.get("parameter", []):
+        name = entry["name"]
+        value_type = entry["type"].strip().lower()
+        raw_value = entry["value"]
+
+        if value_type == "function":
+            module_name, function_name = raw_value.split(":", maxsplit=1)
+            value = getattr(importlib.import_module(module_name), function_name)
+        elif value_type == "list":
+            value = raw_value
+        elif value_type == "int":
+            value = int(raw_value)
+        elif value_type == "float":
+            value = float(raw_value)
+        elif value_type == "str":
+            value = raw_value
+        else:
+            raise ValueError(f"Unsupported parameter type '{value_type}' for '{name}'")
+
+        parameters[name] = value
+
+    return pybamm.ParameterValues(parameters)
+
 
 def main():
 
     ## Currently for MCO use Mohtat2020 parameters. 
     # These will be later changed for the CPI batteries.
 
-    parameter_values = pybamm.ParameterValues("Mohtat2020")
-    parameter_values.update(
-        {
-
-            # Thermal-lumped and surface temperature-lumped
-            #"Cell thermal capacity [J.K-1]": 1200.0,
-            "Casing heat capacity [J.K-1]": 300.0,
-            "Environment thermal resistance [K.W-1]": 2.0,
-            #"Internal thermal resistance [K.W-1]": 0.2,
-
-            # Lithium plating parameters
-            "Lithium plating transfer coefficient": 0.5,
-            # "Dead Lithium decay constants [s-1]": 1e-4,
-            "Exchange-current density for stripping [A.m-2]": 0.1,
-            #"Dead lithium decay rate [s-1]": 1e-4
-        },
-        check_already_exists=False
-    )
+    parameter_values = load_parameter_values()
 
     ## Define the Model.
     def run_model(experiment, parameter_values, last_state):
@@ -50,8 +71,9 @@ def main():
 
         return sol
 
-
-    ## These steps are fixed.
+    # -----------------------------
+    # PRE-STEP PROCESS (These steps are fixed.)
+    # -----------------------------
     pre_step_cycle = (
         "Rest for 2 minutes",
         "Charge at 0.05C until 2.0V",
@@ -60,10 +82,12 @@ def main():
         "Charge at 0.333C for 15 minutes",
         "Rest for 4320 minutes"
     )
-
-    print("Running pre-step...")
+    print(f"------Running pre-step------")
+    start_time = time.time()
     pre_step = pybamm.Experiment([pre_step_cycle])
     sol1 = run_model(pre_step, parameter_values, None)
+    end_time = time.time()
+    print(f"Pre-step completed in {end_time - start_time:.2f} seconds\n")
 
     ## Activate the below to see all keys available in a cycle. 
     ## This is useful to identify the keys for the desired outputs.
@@ -72,32 +96,73 @@ def main():
     #     if "porosity" in key.lower():
     #         print(key)
 
+
+    # -----------------------------
+    # FORMATION PROCESS
+    # -----------------------------
     formation_cycle = (
-        "Charge at 0.01C until 4.3V", # Charge at x1C until x2V
-        "Rest for 1 minutes", # Rest for x3 minutes
+        "Charge at 0.01C until 4.3V",
+        "Rest for 1 minutes",
         "Discharge at 0.03C until 2.7V",
-        ) # 1 min to run
-
-    print("Running formation...")
+        )
+    print(f"------Running formation------")
     formation = pybamm.Experiment([formation_cycle] * 3)
+    start_time = time.time()
     sol2 = run_model(formation, parameter_values, sol1.last_state)
+    end_time = time.time()
+    print(f"Formation completed in {end_time - start_time:.2f} seconds\n")
 
+    
+    # -----------------------------
+    # AGEING PROCESS (This step is fixed.)
+    # -----------------------------
     aging_cycle = (
         "Charge at 1C until 4.1V",
         "Discharge at 1.1C until 2.7V",
-    ) # 2-5 mins to run.
-
-    aging = pybamm.Experiment([aging_cycle] * 1000, termination="80% capacity")
-
-    print("Running aging...")
+    )
+    num_cycles = 1000
+    aging = pybamm.Experiment([aging_cycle] * num_cycles, termination="80% capacity")
+    print(f"------Running aging------")
+    start_time = time.time()
     sol3 = run_model(aging, parameter_values, sol2.last_state)
+    end_time = time.time()
+    print(f"Aging completed in {end_time - start_time:.2f} seconds\n")
 
 
     ## Print the Outputs of interest.
-    print(f"Capacity\nStart: {sol3.cycles[2]['Discharge capacity [A.h]'].entries.max():.3f}", f"Final: {sol3.cycles[-1]['Discharge capacity [A.h]'].entries.max():.3f}\n")
-    print(f"Loss to Negative Li Plating\nStart: {sol3.cycles[2]['Loss of capacity to negative lithium plating [A.h]'].entries.max():.3f}", f"Final: {sol3.cycles[-1]['Loss of capacity to negative lithium plating [A.h]'].entries.max():.3f}\n")
-    print(f"Loss to SEI\nStart: \t{sol3.cycles[2][ 'Loss of capacity to negative SEI [A.h]'].entries.max():.3f}", f"Final: {sol3.cycles[-1]['Loss of capacity to negative SEI [A.h]'].entries.max():.3f}\n")
-    print(f"Local ECM Resistance\nStart: {sol3.cycles[2]['Local ECM resistance [Ohm]'].entries.max():.3f}", f"Final: {sol3.cycles[-1]['Local ECM resistance [Ohm]'].entries.max():.3f}\n")
+    output_rows = [
+        (
+            "Capacity [A.h]",
+            sol3.cycles[2]["Discharge capacity [A.h]"].entries.max(),
+            sol3.cycles[-1]["Discharge capacity [A.h]"].entries.max(),
+        ),
+        (
+            "Loss to Negative Li Plating [A.h]",
+            sol3.cycles[2]["Loss of capacity to negative lithium plating [A.h]"].entries.max(),
+            sol3.cycles[-1]["Loss of capacity to negative lithium plating [A.h]"].entries.max(),
+        ),
+        (
+            "Loss to SEI [A.h]",
+            sol3.cycles[2]["Loss of capacity to negative SEI [A.h]"].entries.max(),
+            sol3.cycles[-1]["Loss of capacity to negative SEI [A.h]"].entries.max(),
+        ),
+        (
+            "Local ECM Resistance [Ohm]",
+            sol3.cycles[2]["Local ECM resistance [Ohm]"].entries.max(),
+            sol3.cycles[-1]["Local ECM resistance [Ohm]"].entries.max(),
+        ),
+    ]
+
+    table_lines = [
+        f"Ageing Results after {num_cycles} cycles:",
+        f"{'Metric':<36} {'Start':>12} {'Final':>12}",
+        f"{'-' * 36} {'-' * 12} {'-' * 12}",
+    ]
+    table_lines.extend(
+        f"{metric:<36} {start:>12.3f} {final:>12.3f}"
+        for metric, start, final in output_rows
+    )
+    print("\n".join(table_lines))
 
 
 if __name__ == "__main__":

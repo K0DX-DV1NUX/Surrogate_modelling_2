@@ -1,0 +1,568 @@
+# PyBaMM parameter configuration for this simulation.
+# Base values are exported from pybamm.ParameterValues("Mohtat2020").
+# Later entries with the same name override earlier values.
+
+[metadata]
+base_parameter_set = "Mohtat2020"
+pybamm_version = "26.5.0"
+format = "array of parameter tables with native TOML values"
+
+[[parameter]]
+name = "Lithium metal partial molar volume [m3.mol-1]"
+type = "float"
+value = 1.3e-05
+
+[[parameter]]
+name = "Exchange-current density for plating [A.m-2]"
+type = "float"
+value = 0.001
+
+[[parameter]]
+name = "Initial plated lithium concentration [mol.m-3]"
+type = "float"
+value = 0.0
+
+[[parameter]]
+name = "Typical plated lithium concentration [mol.m-3]"
+type = "float"
+value = 1000.0
+
+[[parameter]]
+name = "Lithium plating transfer coefficient"
+type = "float"
+value = 0.7
+
+[[parameter]]
+name = "Ratio of lithium moles to SEI moles"
+type = "float"
+value = 2.0
+
+[[parameter]]
+name = "SEI partial molar volume [m3.mol-1]"
+type = "float"
+value = 9.585e-05
+
+[[parameter]]
+name = "SEI reaction exchange current density [A.m-2]"
+type = "float"
+value = 1.5e-07
+
+[[parameter]]
+name = "SEI resistivity [Ohm.m]"
+type = "float"
+value = 200000.0
+
+[[parameter]]
+name = "SEI solvent diffusivity [m2.s-1]"
+type = "float"
+value = 2.5e-22
+
+[[parameter]]
+name = "Bulk solvent concentration [mol.m-3]"
+type = "float"
+value = 2636.0
+
+[[parameter]]
+name = "SEI open-circuit potential [V]"
+type = "float"
+value = 0.4
+
+[[parameter]]
+name = "SEI electron conductivity [S.m-1]"
+type = "float"
+value = 8.95e-14
+
+[[parameter]]
+name = "SEI lithium interstitial diffusivity [m2.s-1]"
+type = "float"
+value = 1e-20
+
+[[parameter]]
+name = "Lithium interstitial reference concentration [mol.m-3]"
+type = "float"
+value = 15.0
+
+[[parameter]]
+name = "Initial SEI thickness [m]"
+type = "float"
+value = 5e-09
+
+[[parameter]]
+name = "EC initial concentration in electrolyte [mol.m-3]"
+type = "float"
+value = 4541.0
+
+[[parameter]]
+name = "EC diffusivity [m2.s-1]"
+type = "float"
+value = 2e-18
+
+[[parameter]]
+name = "SEI kinetic rate constant [m.s-1]"
+type = "float"
+value = 1e-12
+
+[[parameter]]
+name = "SEI growth activation energy [J.mol-1]"
+type = "float"
+value = 0.0
+
+[[parameter]]
+name = "Negative electrode reaction-driven LAM factor [m3.mol-1]"
+type = "float"
+value = 0.0
+
+[[parameter]]
+name = "Positive electrode reaction-driven LAM factor [m3.mol-1]"
+type = "float"
+value = 0.0
+
+[[parameter]]
+name = "Negative current collector thickness [m]"
+type = "float"
+value = 2.5e-05
+
+[[parameter]]
+name = "Negative electrode thickness [m]"
+type = "float"
+value = 6.2e-05
+
+[[parameter]]
+name = "Separator thickness [m]"
+type = "float"
+value = 1.2e-05
+
+[[parameter]]
+name = "Positive electrode thickness [m]"
+type = "float"
+value = 6.7e-05
+
+[[parameter]]
+name = "Positive current collector thickness [m]"
+type = "float"
+value = 2.5e-05
+
+[[parameter]]
+name = "Electrode height [m]"
+type = "float"
+value = 1.0
+
+[[parameter]]
+name = "Electrode width [m]"
+type = "float"
+value = 0.205
+
+[[parameter]]
+name = "Cell cooling surface area [m2]"
+type = "float"
+value = 0.41
+
+[[parameter]]
+name = "Cell volume [m3]"
+type = "float"
+value = 3.92e-05
+
+[[parameter]]
+name = "Negative current collector conductivity [S.m-1]"
+type = "float"
+value = 59600000.0
+
+[[parameter]]
+name = "Positive current collector conductivity [S.m-1]"
+type = "float"
+value = 35500000.0
+
+[[parameter]]
+name = "Negative current collector density [kg.m-3]"
+type = "float"
+value = 8954.0
+
+[[parameter]]
+name = "Positive current collector density [kg.m-3]"
+type = "float"
+value = 2707.0
+
+[[parameter]]
+name = "Negative current collector specific heat capacity [J.kg-1.K-1]"
+type = "float"
+value = 385.0
+
+[[parameter]]
+name = "Positive current collector specific heat capacity [J.kg-1.K-1]"
+type = "float"
+value = 897.0
+
+[[parameter]]
+name = "Negative current collector thermal conductivity [W.m-1.K-1]"
+type = "float"
+value = 401.0
+
+[[parameter]]
+name = "Positive current collector thermal conductivity [W.m-1.K-1]"
+type = "float"
+value = 237.0
+
+[[parameter]]
+name = "Nominal cell capacity [A.h]"
+type = "float"
+value = 5.0
+
+[[parameter]]
+name = "Current function [A]"
+type = "float"
+value = 5.0
+
+[[parameter]]
+name = "Contact resistance [Ohm]"
+type = "int"
+value = 0
+
+[[parameter]]
+name = "Negative electrode conductivity [S.m-1]"
+type = "float"
+value = 100.0
+
+[[parameter]]
+name = "Maximum concentration in negative electrode [mol.m-3]"
+type = "float"
+value = 28746.0
+
+[[parameter]]
+name = "Negative particle diffusivity [m2.s-1]"
+type = "function"
+value = "pybamm.input.parameters.lithium_ion.Mohtat2020:graphite_diffusivity_PeymanMPM"
+
+[[parameter]]
+name = "Negative electrode OCP [V]"
+type = "function"
+value = "pybamm.input.parameters.lithium_ion.Mohtat2020:graphite_ocp_PeymanMPM"
+
+[[parameter]]
+name = "Negative electrode porosity"
+type = "float"
+value = 0.3
+
+[[parameter]]
+name = "Negative electrode active material volume fraction"
+type = "float"
+value = 0.61
+
+[[parameter]]
+name = "Negative particle radius [m]"
+type = "float"
+value = 2.5e-06
+
+[[parameter]]
+name = "Negative electrode Bruggeman coefficient (electrode)"
+type = "float"
+value = 1.5
+
+[[parameter]]
+name = "Negative electrode Bruggeman coefficient (electrolyte)"
+type = "float"
+value = 1.5
+
+[[parameter]]
+name = "Negative electrode transport efficiency"
+type = "float"
+value = 0.16
+
+[[parameter]]
+name = "Negative electrode reference exchange-current density [A.m-2(m3.mol)1.5]"
+type = "float"
+value = 1.061e-06
+
+[[parameter]]
+name = "Negative electrode charge transfer coefficient"
+type = "float"
+value = 0.5
+
+[[parameter]]
+name = "Negative electrode double-layer capacity [F.m-2]"
+type = "float"
+value = 0.2
+
+[[parameter]]
+name = "Negative electrode exchange-current density [A.m-2]"
+type = "function"
+value = "pybamm.input.parameters.lithium_ion.Mohtat2020:graphite_electrolyte_exchange_current_density_PeymanMPM"
+
+[[parameter]]
+name = "Negative electrode density [kg.m-3]"
+type = "float"
+value = 3100.0
+
+[[parameter]]
+name = "Negative electrode specific heat capacity [J.kg-1.K-1]"
+type = "float"
+value = 1100.0
+
+[[parameter]]
+name = "Negative electrode thermal conductivity [W.m-1.K-1]"
+type = "float"
+value = 1.7
+
+[[parameter]]
+name = "Negative electrode OCP entropic change [V.K-1]"
+type = "function"
+value = "pybamm.input.parameters.lithium_ion.Mohtat2020:graphite_entropic_change_PeymanMPM"
+
+[[parameter]]
+name = "Positive electrode conductivity [S.m-1]"
+type = "float"
+value = 100.0
+
+[[parameter]]
+name = "Maximum concentration in positive electrode [mol.m-3]"
+type = "float"
+value = 35380.0
+
+[[parameter]]
+name = "Positive particle diffusivity [m2.s-1]"
+type = "function"
+value = "pybamm.input.parameters.lithium_ion.Mohtat2020:NMC_diffusivity_PeymanMPM"
+
+[[parameter]]
+name = "Positive electrode OCP [V]"
+type = "function"
+value = "pybamm.input.parameters.lithium_ion.Mohtat2020:NMC_ocp_PeymanMPM"
+
+[[parameter]]
+name = "Positive electrode porosity"
+type = "float"
+value = 0.3
+
+[[parameter]]
+name = "Positive electrode active material volume fraction"
+type = "float"
+value = 0.445
+
+[[parameter]]
+name = "Positive particle radius [m]"
+type = "float"
+value = 3.5e-06
+
+[[parameter]]
+name = "Positive electrode Bruggeman coefficient (electrode)"
+type = "float"
+value = 1.5
+
+[[parameter]]
+name = "Positive electrode Bruggeman coefficient (electrolyte)"
+type = "float"
+value = 1.5
+
+[[parameter]]
+name = "Positive electrode transport efficiency"
+type = "float"
+value = 0.16
+
+[[parameter]]
+name = "Positive electrode reference exchange-current density [A.m-2(m3.mol)1.5]"
+type = "float"
+value = 4.824e-06
+
+[[parameter]]
+name = "Positive electrode charge transfer coefficient"
+type = "float"
+value = 0.5
+
+[[parameter]]
+name = "Positive electrode double-layer capacity [F.m-2]"
+type = "float"
+value = 0.2
+
+[[parameter]]
+name = "Positive electrode exchange-current density [A.m-2]"
+type = "function"
+value = "pybamm.input.parameters.lithium_ion.Mohtat2020:NMC_electrolyte_exchange_current_density_PeymanMPM"
+
+[[parameter]]
+name = "Positive electrode density [kg.m-3]"
+type = "float"
+value = 3100.0
+
+[[parameter]]
+name = "Positive electrode specific heat capacity [J.kg-1.K-1]"
+type = "float"
+value = 1100.0
+
+[[parameter]]
+name = "Positive electrode thermal conductivity [W.m-1.K-1]"
+type = "float"
+value = 2.1
+
+[[parameter]]
+name = "Positive electrode OCP entropic change [V.K-1]"
+type = "function"
+value = "pybamm.input.parameters.lithium_ion.Mohtat2020:NMC_entropic_change_PeymanMPM"
+
+[[parameter]]
+name = "Separator porosity"
+type = "float"
+value = 0.4
+
+[[parameter]]
+name = "Separator Bruggeman coefficient (electrolyte)"
+type = "float"
+value = 1.5
+
+[[parameter]]
+name = "Separator density [kg.m-3]"
+type = "float"
+value = 397.0
+
+[[parameter]]
+name = "Separator specific heat capacity [J.kg-1.K-1]"
+type = "float"
+value = 700.0
+
+[[parameter]]
+name = "Separator thermal conductivity [W.m-1.K-1]"
+type = "float"
+value = 0.16
+
+[[parameter]]
+name = "Separator transport efficiency "
+type = "float"
+value = 0.25
+
+[[parameter]]
+name = "Initial concentration in electrolyte [mol.m-3]"
+type = "float"
+value = 1000.0
+
+[[parameter]]
+name = "Cation transference number"
+type = "float"
+value = 0.38
+
+[[parameter]]
+name = "Thermodynamic factor"
+type = "float"
+value = 1.0
+
+[[parameter]]
+name = "Typical lithium ion diffusivity [m2.s-1]"
+type = "float"
+value = 5.34e-10
+
+[[parameter]]
+name = "Electrolyte diffusivity [m2.s-1]"
+type = "function"
+value = "pybamm.input.parameters.lithium_ion.Mohtat2020:electrolyte_diffusivity_PeymanMPM"
+
+[[parameter]]
+name = "Electrolyte conductivity [S.m-1]"
+type = "function"
+value = "pybamm.input.parameters.lithium_ion.Mohtat2020:electrolyte_conductivity_PeymanMPM"
+
+[[parameter]]
+name = "Reference temperature [K]"
+type = "float"
+value = 298.15
+
+[[parameter]]
+name = "Negative current collector surface heat transfer coefficient [W.m-2.K-1]"
+type = "float"
+value = 0.0
+
+[[parameter]]
+name = "Positive current collector surface heat transfer coefficient [W.m-2.K-1]"
+type = "float"
+value = 0.0
+
+[[parameter]]
+name = "Negative tab heat transfer coefficient [W.m-2.K-1]"
+type = "float"
+value = 0.0
+
+[[parameter]]
+name = "Positive tab heat transfer coefficient [W.m-2.K-1]"
+type = "float"
+value = 0.0
+
+[[parameter]]
+name = "Edge heat transfer coefficient [W.m-2.K-1]"
+type = "float"
+value = 5.0
+
+[[parameter]]
+name = "Total heat transfer coefficient [W.m-2.K-1]"
+type = "float"
+value = 5.0
+
+[[parameter]]
+name = "Ambient temperature [K]"
+type = "float"
+value = 298.15
+
+[[parameter]]
+name = "Number of electrodes connected in parallel to make a cell"
+type = "float"
+value = 1.0
+
+[[parameter]]
+name = "Number of cells connected in series to make a battery"
+type = "float"
+value = 1.0
+
+[[parameter]]
+name = "Lower voltage cut-off [V]"
+type = "float"
+value = 2.8
+
+[[parameter]]
+name = "Upper voltage cut-off [V]"
+type = "float"
+value = 4.2
+
+[[parameter]]
+name = "Open-circuit voltage at 0% SOC [V]"
+type = "float"
+value = 2.8
+
+[[parameter]]
+name = "Open-circuit voltage at 100% SOC [V]"
+type = "float"
+value = 4.2
+
+[[parameter]]
+name = "Initial concentration in negative electrode [mol.m-3]"
+type = "float"
+value = 48.8682
+
+[[parameter]]
+name = "Initial concentration in positive electrode [mol.m-3]"
+type = "float"
+value = 31513.0
+
+[[parameter]]
+name = "Initial temperature [K]"
+type = "float"
+value = 298.15
+
+[[parameter]]
+name = "citations"
+type = "list"
+value = ["Mohtat2020"]
+
+[[parameter]]
+name = "Casing heat capacity [J.K-1]"
+type = "float"
+value = 300.0
+
+[[parameter]]
+name = "Environment thermal resistance [K.W-1]"
+type = "float"
+value = 2.0
+
+[[parameter]]
+name = "Lithium plating transfer coefficient"
+type = "float"
+value = 0.5
+
+[[parameter]]
+name = "Exchange-current density for stripping [A.m-2]"
+type = "float"
+value = 0.1
