@@ -37,7 +37,7 @@ def main():
     formation_time_s = sol2.t[-1] - sol2.t[0]
     print(f"Total Formation time: {formation_time_s / 3600:.2f} hours\n")
 
-    num_cycles = 100
+    num_cycles = 1000
     aging = build_aging_experiment(num_cycles)
     sol3 = run_timed_step("aging", aging, parameter_values, sol2.last_state)
 

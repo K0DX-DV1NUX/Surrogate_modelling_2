@@ -23,7 +23,6 @@ def build_formation_cycle(
     x1_charge_rate=DEFAULT_FORMATION_X1_C_RATE,
     x2_discharge_rate=DEFAULT_FORMATION_X2_C_RATE,
     x3_rest_minutes=DEFAULT_FORMATION_X3_REST_MINUTES,
-    x4_num_cycles=DEFAULT_FORMATION_X4_CYCLES,
 ):
     return (
         f"Charge at {x1_charge_rate}C until 4.3V",
@@ -42,7 +41,6 @@ def build_formation_experiment(
         x1_charge_rate=x1_charge_rate,
         x2_discharge_rate=x2_discharge_rate,
         x3_rest_minutes=x3_rest_minutes,
-        x4_num_cycles=x4_num_cycles,
     )
     return pybamm.Experiment([formation_cycle] * x4_num_cycles)
 
