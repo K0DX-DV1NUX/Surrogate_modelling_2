@@ -17,7 +17,7 @@ from outputs import cycle_variable_max
 from parameters import load_parameter_values
 
 
-AGEING_CYCLES = 1000
+AGEING_CYCLES = 100
 TOP_N = 4
 RESULTS_DIR = Path("mco_results")
 

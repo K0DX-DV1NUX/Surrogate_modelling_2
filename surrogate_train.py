@@ -36,13 +36,13 @@ MODELS_DIR = Path("surrogate_models")
 PLOTS_DIR = Path("surrogate_plots")
 
 SURROGATE_GRID = {
-    "x1_charge_rate": [0.01, 0.1, 0.5],
-    "x2_discharge_rate": [0.01, 0.1, 0.5],
-    "x3_rest_minutes": [0.1, 30],
+    "x1_charge_rate": [0.01, 0.5],
+    "x2_discharge_rate": [0.01, 0.5],
+    "x3_rest_minutes": [0.1,],
     "x4_num_cycles": [1, 3],
 }
 
-DEFAULT_SELECTED_CYCLES = [0, 100, 250, 500, 1000]
+DEFAULT_SELECTED_CYCLES = [0, 10, 30, 50, 70, 100]
 
 TARGET_COLUMNS = [
     "capacity",
@@ -388,7 +388,7 @@ def parse_args():
     )
     parser.add_argument("--models-dir", type=Path, default=MODELS_DIR)
     parser.add_argument("--plots-dir", type=Path, default=PLOTS_DIR)
-    parser.add_argument("--max-ageing-cycles", type=int, default=1000)
+    parser.add_argument("--max-ageing-cycles", type=int, default=100)
     parser.add_argument(
         "--selected-cycles",
         type=parse_cycle_list,
