@@ -7,11 +7,17 @@ MODEL_OPTIONS = {
     "thermal": "lumped",
     "surface form": "algebraic",
     "surface temperature": "lumped",
-    "SEI": "ec reaction limited",
+
+    "SEI": "solvent-diffusion limited",
     "SEI film resistance": "distributed",
-    "SEI porosity change": "false",
-    "lithium plating": "reversible",
-    "lithium plating porosity change": "false",
+    "SEI porosity change": "true",
+
+    "lithium plating": "irreversible",
+    "lithium plating porosity change": "true",
+
+    # "particle mechanics": "swelling and cracking",
+    "SEI on cracks": "false",
+    "loss of active material": "reaction-driven",
 }
 
 

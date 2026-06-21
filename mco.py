@@ -13,7 +13,7 @@ from experiments import (
     build_pre_step_experiment,
 )
 from model import run_model
-from outputs import cycle_variable_max
+from outputs import cycle_metric_value, experiment_cycles
 from parameters import load_parameter_values
 
 
@@ -61,8 +61,8 @@ def build_candidates(grid=GRID):
 
 def finite_cycle_values(solution, variable_name):
     values = [
-        cycle_variable_max(cycle, variable_name)
-        for cycle in solution.cycles
+        cycle_metric_value(cycle, variable_name)
+        for cycle in experiment_cycles(solution)
     ]
     return [value for value in values if np.isfinite(value)]
 

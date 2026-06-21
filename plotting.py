@@ -6,19 +6,20 @@ import numpy as np
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from outputs import cycle_variable_max
+from outputs import cycle_metric_value, experiment_cycles
 
 
-def plot_outputs_of_interest(solution, output_specs, plots_dir="plots", start_cycle=2):
+def plot_outputs_of_interest(solution, output_specs, plots_dir="plots", start_cycle=0):
     plots_path = Path(plots_dir)
     plots_path.mkdir(parents=True, exist_ok=True)
-    cycle_numbers = np.arange(len(solution.cycles))
+    cycles = experiment_cycles(solution)
+    cycle_numbers = np.arange(1, len(cycles) + 1)
     saved_paths = []
 
     for label, variable_name, filename in output_specs:
         values = [
-            cycle_variable_max(cycle, variable_name)
-            for cycle in solution.cycles
+            cycle_metric_value(cycle, variable_name)
+            for cycle in cycles
         ]
 
         plt.figure(figsize=(8, 5))

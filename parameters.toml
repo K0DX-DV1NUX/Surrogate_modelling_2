@@ -110,7 +110,7 @@ value = 0.0
 [[parameter]]
 name = "Negative electrode reaction-driven LAM factor [m3.mol-1]"
 type = "float"
-value = 0.0
+value = 1e-4
 
 [[parameter]]
 name = "Positive electrode reaction-driven LAM factor [m3.mol-1]"
@@ -565,4 +565,19 @@ value = 0.5
 [[parameter]]
 name = "Exchange-current density for stripping [A.m-2]"
 type = "float"
-value = 0.1
+value = 0.001
+
+[[parameter]]
+name = "Dead lithium decay rate [s-1]"
+type = "float"
+value = 1e-10
+
+# [[parameter]]
+# name = "Negative electrode initial crack length [m]"
+# type = "float"
+# value = 2e-8
+
+# [[parameter]]
+# name = "Negative electrode cracking rate"
+# type = "float"
+# value = 3.9e-20

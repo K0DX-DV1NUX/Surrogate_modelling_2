@@ -45,9 +45,21 @@ def build_formation_experiment(
     return pybamm.Experiment([formation_cycle] * x4_num_cycles)
 
 
-def build_aging_experiment(num_cycles, termination="80% capacity"):
+def build_aging_experiment(num_cycles):
     aging_cycle = (
         "Charge at 1.8C until 4.1V",
         "Discharge at 1.5C until 2.5V",
     )
-    return pybamm.Experiment([aging_cycle] * num_cycles, termination=termination)
+    return pybamm.Experiment([aging_cycle] * num_cycles)
+
+
+def build_capacity_check_experiment(
+    c_rate=0.05,
+    upper_voltage=4.1,
+    lower_voltage=2.7,
+):
+    capacity_check_cycle = (
+        f"Charge at {c_rate}C until {upper_voltage}V",
+        f"Discharge at {c_rate}C until {lower_voltage}V",
+    )
+    return pybamm.Experiment([capacity_check_cycle])
