@@ -29,12 +29,12 @@ def main():
 
     formation = build_formation_experiment(
         x1_charge_rate=0.01,
-        x2_discharge_rate=0.03,
-        x3_rest_minutes=1,
-        x4_num_cycles=3,
+        x2_discharge_rate=0.01,
+        x3_rest_minutes=0.1,
+        x4_num_cycles=1,
     )
     sol2 = run_timed_step("formation", formation, parameter_values, sol1.last_state)
-    formation_time_s = sol2.t[-1] - sol2.t[0]
+    formation_time_s = sol2.t[-1] - sol2.t[1]
     print(f"Total Formation time: {formation_time_s / 3600:.2f} hours\n")
 
     num_cycles = 1000
