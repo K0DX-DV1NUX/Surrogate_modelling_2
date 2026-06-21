@@ -214,4 +214,10 @@ plots/
 
 results/
 
+surrogate/dataset.csv
+surrogate/failed_candidates.csv
+surrogate/models/
+surrogate/plots/
+mco/results/
+
 .vscode/

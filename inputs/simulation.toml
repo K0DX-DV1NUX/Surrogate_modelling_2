@@ -1,0 +1,106 @@
+[solver]
+relative_tolerance = 1e-6
+absolute_tolerance = 1e-6
+
+[model.options]
+"open-circuit potential" = "single"
+"intercalation kinetics" = "symmetric Butler-Volmer"
+thermal = "lumped"
+"surface form" = "algebraic"
+"surface temperature" = "lumped"
+SEI = "solvent-diffusion limited"
+"SEI film resistance" = "distributed"
+"SEI porosity change" = "true"
+"lithium plating" = "irreversible"
+"lithium plating porosity change" = "true"
+"SEI on cracks" = "false"
+"loss of active material" = "reaction-driven"
+
+[experiments]
+pre_step = [
+  "Rest for 2 minutes",
+  "Charge at 0.05C until 2.0V",
+  "Rest for 1440 minutes",
+  "Charge at 0.05C for 100 minutes",
+  "Charge at 0.333C for 15 minutes",
+  "Rest for 4320 minutes",
+]
+aging = [
+  "Charge at 1.8C until 4.1V",
+  "Discharge at 1.5C until 2.5V",
+]
+
+[formation]
+charge_voltage = 4.3
+discharge_voltage = 2.7
+default_charge_rate = 0.01
+default_discharge_rate = 0.01
+default_rest_minutes = 0.1
+default_cycles = 1
+
+[capacity_check]
+c_rate = 0.05
+upper_voltage = 4.1
+lower_voltage = 2.7
+
+[run]
+aging_cycles = 500
+plots_dir = "plots"
+
+[[outputs]]
+key = "capacity"
+label = "Discharge Capacity [A.h]"
+variable = "Discharge capacity [A.h]"
+filename = "capacity.png"
+aggregation = "discharge_step"
+
+[[outputs]]
+key = "plating"
+label = "Loss of capacity to negative lithium plating [A.h]"
+variable = "Loss of capacity to negative lithium plating [A.h]"
+filename = "loss_to_negative_li_plating.png"
+aggregation = "end"
+
+[[outputs]]
+key = "sei"
+label = "Loss of capacity to negative SEI [A.h]"
+variable = "Loss of capacity to negative SEI [A.h]"
+filename = "loss_to_sei.png"
+aggregation = "end"
+
+[[outputs]]
+key = "resistance"
+label = "Local ECM Resistance [Ohm]"
+variable = "Local ECM resistance [Ohm]"
+filename = "local_ecm_resistance.png"
+aggregation = "end"
+
+[[diagnostics]]
+label = "Negative active material volume fraction"
+variable = "X-averaged negative electrode active material volume fraction"
+physical_range = [0.0, 1.0]
+
+[[diagnostics]]
+label = "Positive active material volume fraction"
+variable = "X-averaged positive electrode active material volume fraction"
+physical_range = [0.0, 1.0]
+
+[[diagnostics]]
+label = "Negative electrode porosity"
+variable = "X-averaged negative electrode porosity"
+physical_range = [0.0, 1.0]
+
+[[diagnostics]]
+label = "Positive electrode porosity"
+variable = "X-averaged positive electrode porosity"
+physical_range = [0.0, 1.0]
+
+[[diagnostics]]
+label = "Negative plated lithium [mol.m-3]"
+variable = "X-averaged negative lithium plating concentration [mol.m-3]"
+physical_range = [0.0, 1e20]
+
+[[diagnostics]]
+label = "Cell temperature [K]"
+variable = "Volume-averaged cell temperature [K]"
+physical_range = [250.0, 400.0]
