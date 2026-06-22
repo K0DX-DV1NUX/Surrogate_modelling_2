@@ -1,6 +1,6 @@
 import argparse
 
-from inputs import ProjectConfig
+from inputs.config import ProjectConfig
 from simulations import BatterySimulator, ExperimentFactory, ParameterLoader, SolutionAnalyzer
 from surrogate.dataset import SurrogateDatasetBuilder
 from surrogate.features import TrajectoryFeaturizer

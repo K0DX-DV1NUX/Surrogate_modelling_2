@@ -23,17 +23,17 @@ class TrajectoryFeaturizer:
             "voltage": voltage,
             "current": current,
             "q_signed": q_signed,
-            "q_abs": q_absolute,
+            # "q_abs": q_absolute,
         }.items():
             uniform = self._uniform_time(time_h, values, len(values))
-            pooled = self._haar_pool(uniform, self.feature_count)
-            for index, value in enumerate(pooled):
-                features[f"{name}_{index:03d}"] = value
+            # pooled = self._haar_pool(uniform, self.feature_count)
+            # for index, value in enumerate(pooled):
+            #     features[f"{name}_{index:03d}"] = value
         return features
 
     def feature_columns(self):
         columns = []
-        for name in ("voltage", "current", "q_signed", "q_abs"):
+        for name in ("voltage", "current", "q_signed",): # "q_abs"
             columns.extend(
                 f"{name}_{index:03d}"
                 for index in range(self.feature_count)

@@ -31,12 +31,12 @@ aging = [
 ]
 
 [formation]
-charge_voltage = 4.3
+charge_voltage = 4.1
 discharge_voltage = 2.7
 default_charge_rate = 0.01
 default_discharge_rate = 0.01
 default_rest_minutes = 0.1
-default_cycles = 1
+default_cycles = 3
 
 [capacity_check]
 c_rate = 0.05

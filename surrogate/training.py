@@ -5,7 +5,6 @@ import joblib
 import matplotlib
 import numpy as np
 import pandas as pd
-from sklearn.ensemble import RandomForestRegressor
 from sklearn.impute import SimpleImputer
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.model_selection import GroupShuffleSplit, train_test_split
@@ -46,7 +45,7 @@ class SurrogateTrainer:
         for target in self.TARGETS:
             model = self._model()
             model.fit(train[features], train[target])
-            model_file = f"{target}_random_forest.joblib"
+            model_file = f"{target}_xgboost.joblib"
             joblib.dump(model, self.models_dir / model_file)
             model_files[target] = model_file
 
@@ -91,12 +90,20 @@ class SurrogateTrainer:
         print(metrics_frame.to_string(index=False))
 
     def _model(self):
-        model = self.config["random_forest"]
+        try:
+            from xgboost import XGBRegressor
+        except Exception as error:
+            raise RuntimeError(
+                "XGBoost could not load. On macOS, install the OpenMP runtime "
+                "(libomp.dylib) before training."
+            ) from error
+
+        model = self.config["xgboost"]
         return Pipeline(
             [
                 ("imputer", SimpleImputer(strategy="median")),
                 ("scaler", StandardScaler()),
-                ("regressor", RandomForestRegressor(**model)),
+                ("regressor", XGBRegressor(**model)),
             ]
         )
 
@@ -142,29 +149,69 @@ class SurrogateTrainer:
         }
 
     def _plot_trajectories(self, predictions):
+        max_protocols = self.config["plots"]["max_test_protocols"]
         for target in self.TARGETS:
-            figure, axis = plt.subplots(figsize=(9, 5))
+            figure, axis = plt.subplots(figsize=(11, 6))
             subset = predictions[
                 (predictions["target"] == target)
                 & (predictions["split"] == "test")
             ]
-            for protocol, values in subset.groupby("protocol_key"):
+            selected_protocols = (
+                subset["protocol_key"].drop_duplicates().iloc[:max_protocols]
+            )
+            subset = subset[subset["protocol_key"].isin(selected_protocols)]
+
+            for color_index, (protocol, values) in enumerate(
+                subset.groupby("protocol_key", sort=False)
+            ):
                 values = values.sort_values("ageing_cycle")
-                axis.plot(values["ageing_cycle"], values["actual"], label=f"{protocol} PyBaMM")
-                axis.plot(values["ageing_cycle"], values["predicted"], linestyle="--", label=f"{protocol} surrogate")
+                color = plt.get_cmap("tab10")(color_index)
+                axis.plot(
+                    values["ageing_cycle"],
+                    values["actual"],
+                    color=color,
+                    linewidth=1.6,
+                    label=f"{protocol} - PyBaMM",
+                )
+                axis.scatter(
+                    values["ageing_cycle"],
+                    values["actual"],
+                    color=color,
+                    marker="o",
+                    s=28,
+                )
+                axis.plot(
+                    values["ageing_cycle"],
+                    values["predicted"],
+                    color=color,
+                    linestyle="--",
+                    linewidth=1.6,
+                    label=f"{protocol} - surrogate",
+                )
+                axis.scatter(
+                    values["ageing_cycle"],
+                    values["predicted"],
+                    color=color,
+                    marker="x",
+                    s=38,
+                )
             axis.set_xlabel("Ageing cycle")
             axis.set_ylabel(target)
             axis.set_title(f"{target} trajectory")
             axis.grid(True, alpha=0.3)
-            if subset["protocol_key"].nunique() <= 4:
-                axis.legend(fontsize=7)
+            axis.legend(
+                fontsize=7,
+                loc="upper left",
+                bbox_to_anchor=(1.02, 1.0),
+                borderaxespad=0,
+            )
             figure.tight_layout()
             figure.savefig(self.plots_dir / f"{target}_trajectory_test.png", dpi=300)
             plt.close(figure)
 
     def _save_metadata(self, model_files, features, data, train, validation, test):
         metadata = {
-            "model_type": "RandomForestRegressor",
+            "model_type": "XGBRegressor",
             "input_type": "formation_voltage_current_charge_trajectory",
             "trajectory_feature_count": self.featurizer.feature_count,
             "feature_columns": features,
