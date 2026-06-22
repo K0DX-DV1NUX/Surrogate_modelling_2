@@ -26,9 +26,9 @@ class TrajectoryFeaturizer:
             # "q_abs": q_absolute,
         }.items():
             uniform = self._uniform_time(time_h, values, len(values))
-            # pooled = self._haar_pool(uniform, self.feature_count)
-            # for index, value in enumerate(pooled):
-            #     features[f"{name}_{index:03d}"] = value
+            pooled = self._haar_pool(uniform, self.feature_count)
+            for index, value in enumerate(pooled):
+                features[f"{name}_{index:03d}"] = float(value)
         return features
 
     def feature_columns(self):

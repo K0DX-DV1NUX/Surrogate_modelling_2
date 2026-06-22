@@ -128,7 +128,7 @@ class FormationOptimizer:
                 results.append(result)
                 print(
                     f"  formation={result['formation_time_h']:.2f} h, "
-                    f"final capacity={result['capacity_final']:.3f} A.h"
+                    f"final capacity={result['capacity_final']:.6f} A.h"
                 )
             except Exception as error:
                 failures.append({**asdict(candidate), "error": str(error)})
