@@ -27,7 +27,7 @@ class BatterySimulator:
         )
         return simulation.solve(starting_solution=last_state)
 
-    def solve_timed(self, label, experiment, last_state=None):
+    def run_solver(self, label, experiment, last_state=None):
         print(f"------Running {label}------")
         started = time.perf_counter()
         solution = self.solve(experiment, last_state)
