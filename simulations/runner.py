@@ -2,6 +2,9 @@ import time
 
 import pybamm
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 class BatterySimulator:
     def __init__(self, simulation_config, parameter_values):
@@ -28,9 +31,9 @@ class BatterySimulator:
         return simulation.solve(starting_solution=last_state)
 
     def run_solver(self, label, experiment, last_state=None):
-        print(f"------Running {label}------")
+        logger.info(f"------Running {label}------")
         started = time.perf_counter()
         solution = self.solve(experiment, last_state)
         elapsed = time.perf_counter() - started
-        print(f"{label.capitalize()} elapsed in {elapsed:.2f} seconds\n")
+        logger.info(f"{label.capitalize()} elapsed in {elapsed:.2f} seconds\n")
         return solution

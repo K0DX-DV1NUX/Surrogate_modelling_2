@@ -10,9 +10,14 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.model_selection import GroupShuffleSplit, train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
+from xgboost import XGBRegressor
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class SurrogateTrainer:
@@ -29,12 +34,13 @@ class SurrogateTrainer:
 
     def train(self):
         if not self.dataset_path.exists():
-            raise FileNotFoundError(
+            logger.exception(
                 f"Dataset not found: {self.dataset_path}. Run surrogate/create_dataset.py first."
             )
         data = pd.read_csv(self.dataset_path)
         features = self.featurizer.feature_columns()
         data = data.dropna(subset=features + list(self.TARGETS))
+        logger.info(f"{data}")
         train, validation, test = self._split(data)
         self.models_dir.mkdir(parents=True, exist_ok=True)
         self.plots_dir.mkdir(parents=True, exist_ok=True)
@@ -47,6 +53,7 @@ class SurrogateTrainer:
             model.fit(train[features], train[target])
             model_file = f"{target}_xgboost.joblib"
             joblib.dump(model, self.models_dir / model_file)
+            logger.info(f"Saved model for target '{target}' to {self.models_dir / model_file}")
             model_files[target] = model_file
 
             for split_name, split_data in (
@@ -87,17 +94,10 @@ class SurrogateTrainer:
         predictions_frame.to_csv(self.models_dir / "predictions.csv", index=False)
         self._plot_trajectories(predictions_frame)
         self._save_metadata(model_files, features, data, train, validation, test)
-        print(metrics_frame.to_string(index=False))
+        metrics_frame.to_string(index=False)
 
     def _model(self):
-        try:
-            from xgboost import XGBRegressor
-        except Exception as error:
-            raise RuntimeError(
-                "XGBoost could not load. On macOS, install the OpenMP runtime "
-                "(libomp.dylib) before training."
-            ) from error
-
+        logger.info(f"Training model with configuration: {self.config['xgboost']}")
         model = self.config["xgboost"]
         return Pipeline(
             [
@@ -142,6 +142,7 @@ class SurrogateTrainer:
         return train_pool.iloc[train_indices], train_pool.iloc[validation_indices], test
 
     def _metrics(self, actual, predicted):
+        logger.info(f"Calculating metrics:\n mae: {mean_absolute_error(actual, predicted)}, rmse: {math.sqrt(mean_squared_error(actual, predicted))}, r2: {r2_score(actual, predicted) if len(actual) > 1 else np.nan}")
         return {
             "mae": mean_absolute_error(actual, predicted),
             "rmse": math.sqrt(mean_squared_error(actual, predicted)),
@@ -210,6 +211,7 @@ class SurrogateTrainer:
             plt.close(figure)
 
     def _save_metadata(self, model_files, features, data, train, validation, test):
+        logger.info(f"Saving metadata to {self.models_dir / 'metadata.json'}")
         metadata = {
             "model_type": "XGBRegressor",
             "input_type": "formation_voltage_current_charge_trajectory",

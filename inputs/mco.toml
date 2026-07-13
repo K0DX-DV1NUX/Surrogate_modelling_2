@@ -1,5 +1,5 @@
 [recommendation]
-mode = "auto"
+mode = "surrogate"
 top_n = 4
 aging_cycles = 500
 prediction_cycles = [1, 500]

@@ -4,7 +4,16 @@ from inputs.config import ProjectConfig
 from simulations import BatterySimulator, ExperimentFactory, ParameterLoader, SolutionAnalyzer
 from surrogate.dataset import SurrogateDatasetBuilder
 from surrogate.features import TrajectoryFeaturizer
+import logging
 
+logging.basicConfig(
+    filename="formation_system.log",
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    filemode="a",
+)
+
+logger = logging.getLogger(__name__)
 
 class DatasetCommand:
     def run(self):
@@ -23,6 +32,8 @@ class DatasetCommand:
             analyzer,
             featurizer,
         )
+        
+        logging.info(f"Creating surrogate dataset at: {builder.dataset_path}")
         builder.create(force=arguments.force, limit_candidates=arguments.limit_candidates)
 
     def _arguments(self):

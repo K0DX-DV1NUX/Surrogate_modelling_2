@@ -8,6 +8,9 @@ import pandas as pd
 
 from simulations import FormationCandidate
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 class SurrogateDatasetBuilder:
     def __init__(
@@ -32,21 +35,25 @@ class SurrogateDatasetBuilder:
 
     def create(self, force=False, limit_candidates=None):
         if self.dataset_path.exists() and not force:
-            print(f"Dataset already exists; skipping creation: {self.dataset_path}")
+            logger.info(f"Dataset already exists; skipping creation: {self.dataset_path}")
             return self.dataset_path
 
         candidates = list(self._candidates())
         if limit_candidates is not None:
             candidates = candidates[:limit_candidates]
 
-        pre_step = self.simulator.solve_timed("pre-step", self.experiments.pre_step())
+        pre_step = self.simulator.run_solver(
+            label="pre-step", 
+            experiment=self.experiments.pre_step(),
+            last_state=None
+            )
         aging_cycles = self.config["data"]["aging_cycles"]
         mesh = self.config["data"]["training_ageing_mesh"]
         rows = []
         failures = []
 
         for index, candidate in enumerate(candidates, start=1):
-            print(f"Dataset candidate {index}/{len(candidates)}: {candidate}")
+            logging.info(f"Dataset candidate {index}/{len(candidates)}: {candidate}")
             started = time.perf_counter()
             try:
                 formation = self.simulator.solve(
@@ -84,15 +91,15 @@ class SurrogateDatasetBuilder:
                             **targets,
                         }
                     )
-                print(f"  completed in {time.perf_counter() - started:.2f} s")
+                logger.info(f"  completed in {time.perf_counter() - started:.2f} s")
             except Exception as error:
                 failures.append({**asdict(candidate), "error": str(error)})
-                print(f"  failed: {error}")
+                logger.exception(f"  failed: {error}")
 
         self.dataset_path.parent.mkdir(parents=True, exist_ok=True)
         pd.DataFrame(rows).to_csv(self.dataset_path, index=False)
         self._write_failures(failures)
-        print(f"Saved {len(rows)} rows to {self.dataset_path}")
+        logger.info(f"Saved {len(rows)} rows to {self.dataset_path}")
         return self.dataset_path
 
     def _candidates(self):

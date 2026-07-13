@@ -2,6 +2,9 @@ import math
 
 import numpy as np
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 class TrajectoryFeaturizer:
     def __init__(self, surrogate_config):
@@ -26,8 +29,8 @@ class TrajectoryFeaturizer:
             # "q_abs": q_absolute,
         }.items():
             uniform = self._uniform_time(time_h, values, len(values))
-            pooled = self._haar_pool(uniform, self.feature_count)
-            for index, value in enumerate(pooled):
+            # pooled = self._haar_pool(uniform, self.feature_count)
+            for index, value in enumerate(uniform):
                 features[f"{name}_{index:03d}"] = float(value)
         return features
 
@@ -60,11 +63,11 @@ class TrajectoryFeaturizer:
         target = np.linspace(time_h[0], time_h[-1], count)
         return np.interp(target, time_h, values)
 
-    def _haar_pool(self, values, output_length):
-        while len(values) >= output_length * 2:
-            if len(values) % 2 == 1:
-                values = values[:-1]
-            values = 0.5 * (values[0::2] + values[1::2])
-        source = np.linspace(0.0, 1.0, len(values))
-        target = np.linspace(0.0, 1.0, output_length)
-        return np.interp(target, source, values)
+    # def _haar_pool(self, values, output_length):
+    #     while len(values) >= output_length * 2:
+    #         if len(values) % 2 == 1:
+    #             values = values[:-1]
+    #         values = 0.5 * (values[0::2] + values[1::2])
+    #     source = np.linspace(0.0, 1.0, len(values))
+    #     target = np.linspace(0.0, 1.0, output_length)
+    #     return np.interp(target, source, values)

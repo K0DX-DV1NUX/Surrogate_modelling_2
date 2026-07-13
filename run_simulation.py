@@ -10,10 +10,10 @@ from simulations import (
 import logging
 
 logging.basicConfig(
-    filename="single_simulation.log",
+    filename="formation_system.log",
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
-    filemode="a",      # "w" overwrites, "a" appends
+    filemode="a",
 )
 
 logger = logging.getLogger(__name__)
@@ -68,7 +68,7 @@ class IndividualSimulationRunner:
         )
 
         self._print_checkup_table(analyzer, formation_check, aging_check)
-        print(analyzer.results_table(aging, aging_cycles))
+        logger.info(analyzer.results_table(aging, aging_cycles))
         logger.info("")
         logger.info(analyzer.diagnostics_table(aging))
 

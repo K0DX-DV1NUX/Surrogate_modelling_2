@@ -3,6 +3,16 @@ from mco import FormationOptimizer
 from simulations import BatterySimulator, ExperimentFactory, ParameterLoader, SolutionAnalyzer
 from surrogate import SurrogatePredictor, TrajectoryFeaturizer
 
+import logging
+
+logging.basicConfig(
+    filename="recommendations.log",
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    filemode="a",
+)
+
+logger = logging.getLogger(__name__)
 
 class RecommendationRunner:
     def __init__(self):
