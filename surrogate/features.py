@@ -19,24 +19,21 @@ class TrajectoryFeaturizer:
         time_s, voltage, current = self._unique_time(time_s, voltage, current)
         time_h = (time_s - time_s[0]) / 3600
         q_signed = self._cumulative_trapezoid(current, time_s) / 3600
-        q_absolute = self._cumulative_trapezoid(np.abs(current), time_s) / 3600
 
         features = {}
         for name, values in {
             "voltage": voltage,
             "current": current,
             "q_signed": q_signed,
-            # "q_abs": q_absolute,
         }.items():
-            uniform = self._uniform_time(time_h, values, len(values))
-            # pooled = self._haar_pool(uniform, self.feature_count)
+            uniform = self._uniform_time(time_h, values, self.feature_count)
             for index, value in enumerate(uniform):
                 features[f"{name}_{index:03d}"] = float(value)
         return features
 
     def feature_columns(self):
         columns = []
-        for name in ("voltage", "current", "q_signed",): # "q_abs"
+        for name in ("voltage", "current", "q_signed"):
             columns.extend(
                 f"{name}_{index:03d}"
                 for index in range(self.feature_count)
@@ -62,12 +59,3 @@ class TrajectoryFeaturizer:
             return np.full(count, values[-1])
         target = np.linspace(time_h[0], time_h[-1], count)
         return np.interp(target, time_h, values)
-
-    # def _haar_pool(self, values, output_length):
-    #     while len(values) >= output_length * 2:
-    #         if len(values) % 2 == 1:
-    #             values = values[:-1]
-    #         values = 0.5 * (values[0::2] + values[1::2])
-    #     source = np.linspace(0.0, 1.0, len(values))
-    #     target = np.linspace(0.0, 1.0, output_length)
-    #     return np.interp(target, source, values)

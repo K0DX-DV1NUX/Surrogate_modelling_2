@@ -6,7 +6,7 @@ from surrogate import SurrogatePredictor, TrajectoryFeaturizer
 import logging
 
 logging.basicConfig(
-    filename="recommendations.log",
+    filename="formation_system.log",
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     filemode="a",

@@ -80,10 +80,10 @@ label = "Negative active material volume fraction"
 variable = "X-averaged negative electrode active material volume fraction"
 physical_range = [0.0, 1.0]
 
-# [[diagnostics]]
-# label = "Positive active material volume fraction"
-# variable = "X-averaged positive electrode active material volume fraction"
-# physical_range = [0.0, 1.0]
+[[diagnostics]]
+label = "Positive active material volume fraction"
+variable = "X-averaged positive electrode active material volume fraction"
+physical_range = [0.0, 1.0]
 
 # [[diagnostics]]
 # label = "Negative electrode porosity"

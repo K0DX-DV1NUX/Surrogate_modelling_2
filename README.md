@@ -241,9 +241,10 @@ is `surrogate/dataset.csv`.
 
 - `aging_cycles`: PyBaMM cycles used to generate training targets.
 - `training_ageing_mesh`: cycle numbers stored as target points.
-- `trajectory_feature_count`: pooled points retained for each formation signal.
+- `trajectory_feature_count`: uniformly sampled points retained for each
+  formation signal.
 
-With 256 points and four signals, the model receives 1,024 formation features
+With 256 points and three signals, the model receives 768 formation features
 plus the requested ageing cycle.
 
 #### `[signals]`
@@ -370,9 +371,9 @@ configured plot directory.
 
 Location: `surrogate/features.py`
 
-Extracts formation voltage/current trajectories, derives signed and absolute
-cumulative charge, uniformly samples in time, and applies Haar-style average
-pooling to produce fixed-size input vectors.
+Extracts formation voltage/current trajectories, derives signed cumulative
+charge, and uniformly samples each signal in time to produce fixed-size input
+vectors. No pooling is applied.
 
 Pre-step data is not used as a surrogate feature because the pre-step is fixed,
 but it is still simulated to establish the correct state before formation.

@@ -8,6 +8,10 @@ import numpy as np
 
 from simulations import FormationCandidate
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class CandidateGrid:
     def __init__(self, grid_config):
@@ -109,13 +113,13 @@ class FormationOptimizer:
         candidates = list(self.grid.candidates())
         use_surrogate = self._use_surrogate(recommendation["mode"])
         mode = "surrogate" if use_surrogate else "PyBaMM ageing"
-        print(f"Evaluating {len(candidates)} candidates using {mode}")
+        logger.info(f"Evaluating {len(candidates)} candidates using {mode}")
 
-        pre_step = self.simulator.solve_timed("pre-step", self.experiments.pre_step())
+        pre_step = self.simulator.run_solver("pre-step", self.experiments.pre_step())
         results = []
         failures = []
         for index, candidate in enumerate(candidates, start=1):
-            print(f"Candidate {index}/{len(candidates)}: {candidate}")
+            logger.info(f"Candidate {index}/{len(candidates)}: {candidate}")
             started = time.perf_counter()
             try:
                 result = self._evaluate(
@@ -126,13 +130,13 @@ class FormationOptimizer:
                 )
                 result["runtime_s"] = time.perf_counter() - started
                 results.append(result)
-                print(
+                logger.info(
                     f"  formation={result['formation_time_h']:.2f} h, "
                     f"final capacity={result['capacity_final']:.6f} A.h"
                 )
             except Exception as error:
                 failures.append({**asdict(candidate), "error": str(error)})
-                print(f"  failed: {error}")
+                logger.exception(f"  failed: {error}")
 
         if not results:
             self.repository.save("failed_candidates.csv", failures)
@@ -202,14 +206,14 @@ class FormationOptimizer:
         return result
 
     def _print_top(self, rows):
-        print("\nRecommended formation protocols")
-        print(
+        logger.info("\nRecommended formation protocols")
+        logger.info(
             f"{'Rank':>4} {'Score':>8} {'Charge C':>9} {'Discharge C':>12} "
             f"{'Rest':>8} {'Cycles':>7} {'Form h':>9} {'Final cap':>10}"
         )
-        print("-" * 86)
+        logger.info("-" * 86)
         for rank, row in enumerate(rows, start=1):
-            print(
+            logger.info(
                 f"{rank:>4} {row['score']:>8.3f} {row['x1_charge_rate']:>9.3g} "
                 f"{row['x2_discharge_rate']:>12.3g} {row['x3_rest_minutes']:>8.1f} "
                 f"{row['x4_num_cycles']:>7} {row['formation_time_h']:>9.2f} "
